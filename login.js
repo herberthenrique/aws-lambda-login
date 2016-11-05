@@ -2,13 +2,13 @@
 
 const computeHash = require('./security').computeHash;
 const jwt = require('jsonwebtoken');
-var AWS = require('aws-sdk');
-var crypto = require('crypto');
-var config = require('./config.js');
+const AWS = require('aws-sdk');
+const crypto = require('crypto');
+const config = require('./config.js');
 
 // Get reference to AWS clients
-var dynamodb = new AWS.DynamoDB();
-var cognitoidentity = new AWS.CognitoIdentity();
+const dynamodb = new AWS.DynamoDB();
+const cognitoidentity = new AWS.CognitoIdentity();
 
 function getUser(email, fn) {
   dynamodb.getItem({
@@ -22,9 +22,10 @@ function getUser(email, fn) {
     if (err) return fn(err);
     else {
       if ('Item' in data) {
-        var hash = data.Item.passwordHash.S;
-        var salt = data.Item.passwordSalt.S;
-        fn(null, hash, salt);
+        let hash = data.Item.passwordHash.S;
+        let salt = data.Item.passwordSalt.S;
+        let name = data.Item.name.S;
+        fn(null, hash, salt, name);
       } else {
         fn(null, null); // User not found
       }
@@ -32,17 +33,17 @@ function getUser(email, fn) {
   });
 }
 
-function getToken(email) {
-  return jwt.sign({ email: email }, config.secret, {
+function getToken(email, name) {
+  return jwt.sign({ email: email, name: name }, config.secret, {
     expiresIn: config.tokenExpiration
   });
 }
 
 exports.handler = function(event, context) {
-  var email = event.email;
-  var clearPassword = event.password;
+  let email = event.email;
+  let clearPassword = event.password;
 
-  getUser(email, function(err, correctHash, salt) {
+  getUser(email, function(err, correctHash, salt, name) {
     if (err) {
       context.fail('Error in getUser: ' + err);
     } else {
@@ -61,7 +62,7 @@ exports.handler = function(event, context) {
             if (hash == correctHash) {
               // Login ok
               console.log('User logged in: ' + email);
-              let token = getToken(email);
+              let token = getToken(email, name);
               context.succeed({
                 login: true,
                 token: token

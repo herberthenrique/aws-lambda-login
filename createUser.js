@@ -1,19 +1,16 @@
 'use strict';
 
-const computeHash = require('./security').computeHash;
-
-// dependencies
 const AWS = require('aws-sdk');
 const crypto = require('crypto');
 const util = require('util');
 const config = require('./config.js');
+const computeHash = require('./security').computeHash;
 
-// Get reference to AWS clients
 const dynamodb = new AWS.DynamoDB();
 const ses = new AWS.SES();
 
 
-function storeUser(email, password, salt, fn) {
+function storeUser(email, password, name, salt, fn) {
   const len = config.byteSize;
   crypto.randomBytes(len, function(err, token) {
     if (err) return fn(err);
@@ -23,6 +20,9 @@ function storeUser(email, password, salt, fn) {
       Item: {
         email: {
           S: email
+        },
+        name: {
+          S: name
         },
         passwordHash: {
           S: password
@@ -44,14 +44,15 @@ function storeUser(email, password, salt, fn) {
 
 
 exports.handler = function(event, context) {
-  var email = event.email;
-  var clearPassword = event.password;
+  let email = event.email;
+  let clearPassword = event.password;
+  let name = event.name;
 
   computeHash(clearPassword, function(err, salt, hash) {
     if (err) {
       context.fail('Error in hash: ' + err);
     } else {
-      storeUser(email, hash, salt, function(err, token) {
+      storeUser(email, hash, name, salt, function(err, token) {
         if (err) {
           if (err.code == 'ConditionalCheckFailedException') {
             // userId already found

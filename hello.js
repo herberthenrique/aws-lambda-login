@@ -1,7 +1,7 @@
 'use strict';
 
 const jwt = require('jsonwebtoken');
-var config = require('./config.js');
+const config = require('./config.js');
 
 function verifyToken(token, fn) {
   jwt.verify(token, config.secret, function(err, decoded) {
@@ -19,7 +19,7 @@ exports.handler = function(event, context) {
   	if(err) {
 		context.fail(err.message);
   	}
-  	context.succeed(decoded);
+  	context.succeed("Hello " + decoded.name);
   })
 
 }
