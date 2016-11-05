@@ -1,0 +1,29 @@
+{
+  "name": "aws-lambda-login",
+  "version": "1.0.0",
+  "description": "AWS lambda login tests",
+  "main": "index.js",
+  "dependencies": {
+    "crypto": "^0.0.3",
+    "util": "^0.10.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/herberthenrique/aws-lambda-login.git"
+  },
+  "keywords": [
+    "aws",
+    "lambda",
+    "node"
+  ],
+  "author": "Herbert Henrique",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/herberthenrique/aws-lambda-login/issues"
+  },
+  "homepage": "https://github.com/herberthenrique/aws-lambda-login#readme"
+}

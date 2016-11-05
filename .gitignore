@@ -1,0 +1,6 @@
+.DS_Store
+.env
+deploy.env
+event.json
+build/
+node_modules
