@@ -6,8 +6,6 @@ var AWS = require('aws-sdk');
 var crypto = require('crypto');
 var config = require('./config.js');
 
-
-
 // Get reference to AWS clients
 var dynamodb = new AWS.DynamoDB();
 var cognitoidentity = new AWS.CognitoIdentity();
