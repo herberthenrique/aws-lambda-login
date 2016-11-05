@@ -1,42 +1,25 @@
-console.log('Loading function');
+'use strict';
+
+const computeHash = require('./security').computeHash;
 
 // dependencies
-var AWS = require('aws-sdk');
-var crypto = require('crypto');
-var util = require('util');
+const AWS = require('aws-sdk');
+const crypto = require('crypto');
+const util = require('util');
+const config = require('./config.js');
 
 // Get reference to AWS clients
-var dynamodb = new AWS.DynamoDB();
-var ses = new AWS.SES();
+const dynamodb = new AWS.DynamoDB();
+const ses = new AWS.SES();
 
-function computeHash(password, salt, fn) {
-  // Bytesize
-  var len = 128;
-  var iterations = 4096;
-
-  if (3 == arguments.length) {
-    crypto.pbkdf2(password, salt, iterations, len, fn);
-  } else {
-    fn = salt;
-    crypto.randomBytes(len, function(err, salt) {
-      if (err) return fn(err);
-      salt = salt.toString('base64');
-      crypto.pbkdf2(password, salt, iterations, len, function(err, derivedKey) {
-        if (err) return fn(err);
-        fn(null, salt, derivedKey.toString('base64'));
-      });
-    });
-  }
-}
 
 function storeUser(email, password, salt, fn) {
-  // Bytesize
-  var len = 128;
+  const len = config.byteSize;
   crypto.randomBytes(len, function(err, token) {
     if (err) return fn(err);
     token = token.toString('hex');
     dynamodb.putItem({
-      TableName: 'users',
+      TableName: config.tableName,
       Item: {
         email: {
           S: email
@@ -58,6 +41,7 @@ function storeUser(email, password, salt, fn) {
     });
   });
 }
+
 
 exports.handler = function(event, context) {
   var email = event.email;

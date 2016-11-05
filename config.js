@@ -1,3 +1,5 @@
+'use strict';
+
 const configuration = {
 	byteSize: 128,
 	iterations: 4096,
