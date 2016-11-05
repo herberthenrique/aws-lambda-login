@@ -1,3 +1,5 @@
+'use strict';
+
 const computeHash = require('./security').computeHash;
 const jwt = require('jsonwebtoken');
 var AWS = require('aws-sdk');
@@ -34,7 +36,7 @@ function getUser(email, fn) {
 
 function getToken(email) {
   return jwt.sign({ email: email }, config.secret, {
-    expiresInMinutes: config.tokenExpiration
+    expiresIn: config.tokenExpiration
   });
 }
 
@@ -64,7 +66,6 @@ exports.handler = function(event, context) {
               let token = getToken(email);
               context.succeed({
                 login: true,
-                identityId: identityId,
                 token: token
               });
             } else {
